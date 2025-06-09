@@ -1,0 +1,79 @@
+#!/usr/bin/env lua5.1
+
+local dir, verbosity, package = './', 0, nil
+
+if string.find(arg[0], '[\\/]') then
+	dir = string.gsub(arg[0], '[^\\/]*$', '')
+end
+if type(arg[1]) == 'string' and string.match(arg[1], '^-v+$') then
+	verbosity = string.len(arg[1]) - 1
+	table.remove(arg, 1)
+end
+if type(arg[1]) == 'string' and string.match(arg[1], '^[%w_-]+$') then
+	package = arg[1]
+	table.remove(arg, 1)
+end
+
+dofile(dir .. 'luaunit/luaunit.lua')
+dofile(dir .. 'api-mocks.lua')
+dofile(dir .. 'LibStub/LibStub.lua')
+dofile(dir .. '../LibPubSub-1.0.lua')
+
+lib = LibStub('LibPubSub-1.0')
+
+function makeFunction(defaultResult)
+	local function fn(self, result)
+		if type(result) == 'nil' then
+			self.result = defaultResult
+		else
+			self.result = result
+		end
+		self.calls = self.calls + 1
+	end
+
+	return fn
+end
+
+function makeObject(...)
+	local object = {calls = 0}
+
+	for _, name in pairs({...}) do
+		object[name] = makeFunction(name)
+	end
+
+	return object
+end
+
+function makeObserver(...)
+	local observer = lib:New()
+
+	if not observer or not observer.Publish or not observer.Subscribe or not observer.Unsubscribe then
+		error('unable to test, please check "init" tests')
+	end
+
+	observer.calls = 0
+
+	for _, name in pairs({...}) do
+		observer[name] = makeFunction(name)
+	end
+
+	return observer
+end
+
+Tests = {}
+
+if package then
+	local success = pcall(dofile, dir .. 'tests/' .. package .. '.lua')
+	if not success then
+		io.stderr:write('Failed to run specified test package "' .. package .. '"\n')
+	end
+else
+	dofile(dir .. 'tests/init.lua')
+	dofile(dir .. 'tests/error.lua')
+	dofile(dir .. 'tests/publish.lua')
+	dofile(dir .. 'tests/subscribe.lua')
+	dofile(dir .. 'tests/unsubscribe.lua')
+end
+
+LuaUnit:setVerbosity(verbosity)
+os.exit(LuaUnit:run())
