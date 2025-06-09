@@ -1,0 +1,11 @@
+## Interface: 11505
+## Title: Proficient
+## Author: rsrx
+## Version: 1.00
+## Notes: Adds sorting, search, and favorites to the profession UI.
+## SavedVariables: ProficientStorage
+
+embeds.xml
+
+proficient.lua
+utils.lua
