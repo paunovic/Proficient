@@ -19,10 +19,14 @@ function addon:OnInitialize()
         trade = {
             title = nil,
             searchBox = nil,
+            clearButton = nil,
+            hasMatsCheckbox = nil,
         },
         craft = {
             title = nil,
             searchBox = nil,
+            clearButton = nil,
+            hasMatsCheckbox = nil,
         },
     };
 
@@ -107,11 +111,13 @@ function addon:ShowFrame(mode)
         self.frames[mode].title = frameTitle
         if self.frames[mode].searchBox then
             self.frames[mode].searchBox:Hide()
+            self.frames[mode].hasMatsCheckbox:Hide()
             self.frames[mode].clearButton:Hide()
             self.frames[mode].sortDropdown:Hide()
             self.frames[mode].searchBox = nil
             self.frames[mode].clearButton = nil
             self.frames[mode].sortDropdown = nil
+            self.frames[mode].hasMatsCheckbox = nil
         end
     end
 
@@ -119,6 +125,7 @@ function addon:ShowFrame(mode)
     if not ProficientStorage.frames[psFrameName] then
         ProficientStorage.frames[psFrameName] = {
             sortDropdownValue = "alphabetical",
+            hasMatsChecked = false,
             favorites = {},
         }
     end
@@ -127,7 +134,7 @@ function addon:ShowFrame(mode)
         self.frames[mode].searchBox = CreateFrame("EditBox", nil, mode == "craft" and CraftFrame or TradeSkillFrame, "InputBoxTemplate")
         local searchBox = self.frames[mode].searchBox
 
-        searchBox:SetSize(160, 18)
+        searchBox:SetSize(115, 18)
         searchBox:SetPoint("TOPRIGHT", -45, -70)
         searchBox:SetAutoFocus(false)
 
@@ -189,6 +196,22 @@ function addon:ShowFrame(mode)
 			searchBox:ClearFocus()
 		end)
 
+        self.frames[mode].hasMatsCheckbox = CreateFrame("CheckButton", nil, mode == "craft" and CraftFrame or TradeSkillFrame, "UICheckButtonTemplate")
+        local hasMatsCheckbox = self.frames[mode].hasMatsCheckbox
+
+        hasMatsCheckbox:SetPoint("TOPLEFT", 142, -64)
+        hasMatsCheckbox.text:SetText("Mats")
+        hasMatsCheckbox:SetChecked(ProficientStorage.frames[psFrameName].hasMatsChecked)
+
+        hasMatsCheckbox:SetScript("OnClick", function(self)
+            ProficientStorage.frames[psFrameName].hasMatsChecked = self:GetChecked()
+            addon:Search(mode)
+        end)
+
+        hasMatsCheckbox:SetScript("OnShow", function(self)
+            self:SetChecked(ProficientStorage.frames[psFrameName].hasMatsChecked)
+        end)
+
 		self.frames[mode].sortDropdown = CreateFrame("Frame", nil, mode == "craft" and CraftFrame or TradeSkillFrame, "UIDropDownMenuTemplate")
 		local sortDropdown = self.frames[mode].sortDropdown
 
@@ -225,6 +248,7 @@ function addon:ShowFrame(mode)
 
     self.frames[mode].searchBox:Show()
     self.frames[mode].sortDropdown:Show()
+    self.frames[mode].hasMatsCheckbox:Show()
 
     addon.frames["trade"].resetSelection = true
 end
@@ -271,7 +295,12 @@ function addon:Search(mode)
         end
         if skillName and skillType ~= "header" then
             if not term or string.find(skillName:lower(), term) then
-                tinsert(foundSkills, {name = skillName, index = skillIndex, available = numAvailable, type = skillType})
+                if (
+                    not ProficientStorage.frames[psFrameName].hasMatsChecked
+                    or numAvailable > 0
+                ) then
+                    tinsert(foundSkills, {name = skillName, index = skillIndex, available = numAvailable, type = skillType})
+                end
             end
         elseif skillType == "header" and not isExpanded then
             ExpandTradeSkillSubClass(skillIndex)
