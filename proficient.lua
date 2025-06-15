@@ -32,7 +32,7 @@ function addon:OnInitialize()
 
     -- initialize on the first run
     if not ProficientStorage then
-        ProficientUtils:ChatMessage("|cFFFFFF00[ProficientTools] ".."|cFFFFFF00Initializing...")
+        ProficientUtils:ChatMessage("|cFFFFFF00[Proficient] ".."|cFFFFFF00Initializing...")
         ProficientStorage = {}
     end
 
@@ -161,12 +161,12 @@ function addon:ShowFrame(mode)
 		self.frames[mode].clearButton = CreateFrame("Button", nil, searchBox)
 		local clearButton = self.frames[mode].clearButton
 
-        clearButton:SetPoint("RIGHT", -3, 0)
+        clearButton:SetPoint("RIGHT", -2, 0)
         clearButton:SetWidth(17)
         clearButton:SetHeight(17)
         do
             local tex = clearButton:CreateTexture(nil, "ARTWORK")
-            tex:SetTexture[[Interface\AddOns\ProficientTools\ClearSearchIcon]]
+            tex:SetTexture[[Interface\AddOns\Proficient\ClearSearchIcon]]
             tex:SetPoint("TOPRIGHT", 0, 0)
             tex:SetWidth(17)
             tex:SetHeight(17)
@@ -323,7 +323,9 @@ function addon:Search(mode)
                     return SKILL_TYPE_SORT_ORDER[a.type] < SKILL_TYPE_SORT_ORDER[b.type]
                 end
             else
-                print("|cFFFF0000[ProficientTools] ".."|cFFFF0000Invalid sortDropdownValue: "..ProficientStorage.frames[psFrameName].sortDropdownValue)
+                print("|cFFFF0000[Proficient] ".."|cFFFF0000Invalid sortDropdownValue: "..ProficientStorage.frames[psFrameName].sortDropdownValue)
+                # default to alphabetical sorting
+                return a.name < b.name
             end
         end
     end)

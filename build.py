@@ -4,6 +4,7 @@ from pathlib import Path
 
 files: set[str] = {
     "Proficient.toc",
+    "ClearSearchIcon.blp",
     "lib/**",
 }
 
