@@ -324,7 +324,7 @@ function addon:Search(mode)
                 end
             else
                 print("|cFFFF0000[Proficient] ".."|cFFFF0000Invalid sortDropdownValue: "..ProficientStorage.frames[psFrameName].sortDropdownValue)
-                # default to alphabetical sorting
+                -- default to alphabetical sorting
                 return a.name < b.name
             end
         end

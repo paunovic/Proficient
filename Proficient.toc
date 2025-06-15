@@ -1,7 +1,7 @@
 ## Interface: 11505
 ## Title: Proficient
 ## Author: rsrx
-## Version: 1.02
+## Version: 1.03
 ## Notes: Adds sorting, search, and favorites to the profession UI.
 ## SavedVariables: ProficientStorage
 
