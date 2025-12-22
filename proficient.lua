@@ -223,9 +223,10 @@ function addon:ShowFrame(mode)
             info.text = "Alphabetical"
             info.value = "alphabetical"
             info.func = function()
-                UIDropDownMenu_SetSelectedValue(sortDropdown, "alphabetical")
                 ProficientStorage.frames[psFrameName].sortDropdownValue = "alphabetical"
                 addon.frames["trade"]["resetSelection"] = true
+                UIDropDownMenu_SetSelectedValue(sortDropdown, "alphabetical")
+                UIDropDownMenu_SetText(sortDropdown, "Alphabetical")
                 addon:Search(mode)
             end
             UIDropDownMenu_AddButton(info)
@@ -234,9 +235,10 @@ function addon:ShowFrame(mode)
             info.text = "Level"
             info.value = "level"
             info.func = function()
-                UIDropDownMenu_SetSelectedValue(sortDropdown, "level")
                 ProficientStorage.frames[psFrameName].sortDropdownValue = "level"
                 addon.frames["trade"]["resetSelection"] = true
+                UIDropDownMenu_SetSelectedValue(sortDropdown, "level")
+                UIDropDownMenu_SetText(sortDropdown, "Level")
                 addon:Search(mode)
             end
             UIDropDownMenu_AddButton(info)
@@ -245,12 +247,13 @@ function addon:ShowFrame(mode)
 
     self.frames[mode].searchBox:SetText(DEFAULT_SEARCH_TEXT)
     UIDropDownMenu_SetSelectedValue(self.frames[mode].sortDropdown, ProficientStorage.frames[psFrameName].sortDropdownValue)
+    UIDropDownMenu_SetText(self.frames[mode].sortDropdown, ProficientStorage.frames[psFrameName].sortDropdownValue:gsub("^%l", string.upper))
 
     self.frames[mode].searchBox:Show()
     self.frames[mode].sortDropdown:Show()
     self.frames[mode].hasMatsCheckbox:Show()
 
-    addon.frames["trade"].resetSelection = true
+    addon.frames[mode].resetSelection = true
 end
 
 function addon:OnTradeSkillClose()
